@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.green.menus.dto.MenuDTO;
@@ -102,6 +103,32 @@ public class PdsController {
 		mv.addObject("menuList",  menuList);
 		mv.addObject("map",       map);
 		return         mv;
+	}
+	
+	// /Pds/Write
+	// text   : menu_id=MENU01, nowpage=1, title=aa, writer=aa, content=aa -> map
+	// binary : upfile=(binary), upfile=(binary)                  -> uploadfiles
+	@RequestMapping("/Write")
+	public  ModelAndView  write(
+			@RequestParam HashMap<String, Object> map,
+			@RequestParam(value="upfile") MultipartFile [] uploadfiles ) {
+		System.out.println("map : " + map);
+		System.out.println("uploadfiles : " + uploadfiles);
+		
+		// 넘어온 정보를 파일과 db에 저장한다.
+		pdsService.setWrite( map, uploadfiles );
+		
+		// 저장후 돌아가기
+		String  menu_id  = String.valueOf(map.get("menu_id"));
+		int     nowpage  = Integer.parseInt(String.valueOf(map.get("nowpage")));
+		
+		ModelAndView  mv   = new ModelAndView();
+		String        loc  = """
+				redirect:/Pds/List?menu_id=%s&nowpage=%d
+				""".formatted( menu_id , nowpage );
+		System.out.println("loc : " + loc);
+		mv.setViewName( loc );
+		return  mv;
 	}
 	
 	
