@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="shortcut icon" href="/img/favicon2.png" type="image/x-icon">
+<link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <link href="/css/common.css" rel="stylesheet" />
@@ -138,9 +138,23 @@
 	
 	<!--Javascript -->
 	<script>
+	  // 상단 선택된 메뉴 이름을 붙이기 위함
 	  const  mnameEl    =  document.querySelector('#mname');
 	  let    menunameEl =  document.querySelector('.menu .active')
 	  mnameEl.innerHTML =  menunameEl.innerHTML;
+	  
+	  // 검색한 후 searchType 을 선택한 내용으로 변경
+	  let    curSearchType  = '${ map.searchType }'  // 서버변수
+	  const  optionEls      = document.querySelectorAll('option')
+	  let    index          = 0
+	  switch( curSearchType ) {
+	  case "":
+	  case "title"   : index = 0; break;
+	  case "content" : index = 1; break;
+	  case "writer"  : index = 2; break;
+	  }
+	  optionEls[index].selected = true;
+	  
 	</script>
 	
 </body>

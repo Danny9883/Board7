@@ -40,14 +40,18 @@ public class PdsController {
 		// map:{menu_id=MENU01, nowpage=1}
 		// map:{menu_id=MENU01, nowpage=1, searchType=, keyword=}
 		
+		if (map.get("searchType") != null && map.get("searchType").equals("writer"))
+			map.put("keyword", ((String) map.get("keyword")).toUpperCase());
+		
 		// 메뉴 목록 조회
 		List<MenuDTO>  menuList      =  menuMapper.getMenuList();    
 		
-		//  자료실 목록 조회 (10 개씩)
+		//  자료실 목록 조회 (10 개씩) - 페이징 처리 준비작업 시작
 		//  해당 메뉴의 전체 자료수
 		int            totalCount    =  pdsMapper.count( map );  // menus_id, searchType, keyword    
 		System.out.println("totalCount:" + totalCount);
 		
+		// 현재 페이지 정보 : map{ nowpage=1 } Object -> String -> int
 		int         nowpage   =  Integer.parseInt( String.valueOf( map.get("nowpage") ) );  
 		
 		// 페이징을 위한 설정
