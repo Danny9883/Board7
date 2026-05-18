@@ -82,6 +82,8 @@
 	<!-- 
 			setFileWriter : Files 테이블에 insert
 			insert all : 한번에 여러줄을 insert 할 수 있는 명령 
+		  ( SELECT NVL(MAX(FILE_NUM),0)+1 FROM FILES ), 한번만 실행 : 무결성 제약 위배
+		  최초 실행시 값을 한번만 받아두기 때문에 중복 키값이 들어감
 	-->
 	<insert id="setFileWriter">
 	
@@ -93,11 +95,11 @@
 					   separator  = " "	 >
 					   
 		  INTO  FILES  VALUES (
-		  	( SELECT ),
+		  	( SELECT NVL(MAX(FILE_NUM),0) FROM FILES ) + #{i} + 1,
 				( SELECT MAX(IDX) FROM BOARD ),
-				${ file.filename  },
-				${ file.fileext   },
-				${ file.sfilename }
+				#{ file.filename  },
+				#{ file.fileext   },
+				#{ file.sfilename }
 		  )
 		  
 	  </foreach>
