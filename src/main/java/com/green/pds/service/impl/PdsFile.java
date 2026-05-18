@@ -53,10 +53,12 @@ public class PdsFile {
 			String  uuid        = UUID.randomUUID().toString();
 			
 			// 저장할 sfilename 생성
+			// saveName : 실제 저장될 서버의 경로 + uuid + 파일명
 			String  saveName    = uploadPath + File.separator
 								+ folderPath + File.separator
 								+ uuid       + "." + fileName;  // 실제 저장될 파일명
 			
+			// saveName2 : uuid + 파일명
 			String  saveName2   = folderPath + File.separator
 								+ uuid       + "." + fileName;  // sfilename
 			

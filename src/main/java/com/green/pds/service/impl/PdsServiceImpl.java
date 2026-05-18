@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.green.BoardApplication;
+
+import com.green.pds.dto.FilesDto;
 import com.green.pds.dto.PdsDto;
 import com.green.pds.mapper.PdsMapper;
 import com.green.pds.service.PdsService;
@@ -20,22 +21,14 @@ public class PdsServiceImpl implements PdsService {
 	@Value("${part1.upload-path}")
 	private String uploadPath;
 
-    private final BoardApplication boardApplication;
-
 	@Autowired
 	private   PdsMapper  pdsMapper;
 
-    PdsServiceImpl(BoardApplication boardApplication) {
-        this.boardApplication = boardApplication;
-    }
-	
 	@Override
 	public List<PdsDto> getPdsList(HashMap<String, Object> map) {
 		
 		List<PdsDto> pdsList =  pdsMapper.getPdsList( map ); 
-		
 		return       pdsList;
-		
 	}
 
 	@Override
@@ -52,8 +45,24 @@ public class PdsServiceImpl implements PdsService {
 		PdsFile.save( map, uploadfiles );
 		
 		System.out.println("PdsFile 이후 map : " + map );
+		// { menu_id=MENU01, nowpage=1, title=123, writer=123, content=213, 
+		// uploadPath=D:/dev/springboot/data/, 
+		// fileList=[
+		//    FilesDto(file_num=0, idx=0, filename=favicon.png, fileext=.png, 
+		//        sfilename=2026\05\18\2ff4c1ee-19c4-4731-8641-b2a9439ef2f0.favicon.png), 
+		//    FilesDto(file_num=0, idx=0, filename=favicon.png, fileext=.png, 
+		//        sfilename=2026\05\18\dfbe41cd-9e4c-463a-8402-85793ca3578f.favicon.png)
+		//    ]
+		// }
 		
 		// 2. DB 에 저장 : 자료실 글 쓰기  <- map
+		//   Board 테이블에 저장
+		pdsMapper.setWrite( map );     // insertBoard 
+		
+		// 3. Files 에 저장
+		List<FilesDto> fileList = (List<FilesDto>) map.get("fileList");
+		if( fileList.size() > 0 )
+			pdsMapper.setFileWriter( map );
 		
 		
 	}
