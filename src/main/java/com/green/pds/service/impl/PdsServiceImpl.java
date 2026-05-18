@@ -67,6 +67,28 @@ public class PdsServiceImpl implements PdsService {
 		
 	}
 
+	// map(idx) 에 해당하는 글 조회수 증가
+	@Override
+	public void setReadCountUpdate(HashMap<String, Object> map) {
+		
+		pdsMapper.setReadCountUpdate( map );
+		
+	}
+
+	// 자료실 게시글(Pds) 을 조회한다 : map(idx)
+	@Override
+	public PdsDto getPds(HashMap<String, Object> map) {
+		
+		PdsDto  pdsDto  = pdsMapper.getPds( map );
+		return  pdsDto;
+	}
+
+	@Override
+	public List<FilesDto> getFileList(HashMap<String, Object> map) {
+		List<FilesDto> fileList = pdsMapper.getFileList( map );
+		return fileList;
+	}
+
 }
 
 

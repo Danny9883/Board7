@@ -14,6 +14,7 @@ import com.green.menus.dto.MenuDTO;
 import com.green.menus.mapper.MenuMapper;
 import com.green.paging.dto.Pagination;
 import com.green.paging.dto.SearchDto;
+import com.green.pds.dto.FilesDto;
 import com.green.pds.dto.PdsDto;
 import com.green.pds.mapper.PdsMapper;
 import com.green.pds.service.PdsService;
@@ -138,16 +139,27 @@ public class PdsController {
 	public  ModelAndView   view(
 		@RequestParam  HashMap<String, Object>  map	) {
 		
+		// 메뉴목록 조회
+		List<MenuDTO> menuList = menuMapper.getMenuList();
+		
+		// 조회수 증가
+		pdsService.setReadCountUpdate( map );  // map : idx -> incHit
+		
 		// 넘겨줄 pdsDto 정보를 조회 idx
+		PdsDto         pdsDto   = pdsService.getPds( map );
 		
 		// 넘겨줄 filesDto 정보를 조회 idx
+		List<FilesDto> fileList = pdsService.getFileList( map );
 		
 		//-----------------------------------
 		ModelAndView   mv     =   new ModelAndView();		
 		mv.setViewName("pds/view");
-		// mv.addObject("menuList",  menuList);
+		mv.addObject("menuList",  menuList);
 		
-		mv.addObject("map",       map);
+		mv.addObject("pds",      pdsDto);
+		mv.addObject("fileList", fileList);
+		
+		mv.addObject("map",      map);
 		return         mv;
 		
 	}
