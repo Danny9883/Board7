@@ -190,6 +190,17 @@
 	</delete>
 	
 	
+	<!-- setUpdate : Board table 내용 수정 -->
+	<update id="setUpdate">
+	
+	UPDATE   BOARD
+	  SET    TITLE   = #{title},
+	         CONTENT = #{content}
+	  WHERE  IDX     = #{idx}
+	
+	</update>
+	
+	
 	
 </mapper>
 

@@ -236,6 +236,52 @@ public class PdsController {
 	}
 	
 	
+	// http://localhost:8080/Pds/UpdateForm?idx=1016&menu_id=MENU01&nowpage=1
+	@RequestMapping("/UpdateForm")
+	public  ModelAndView  updateForm(
+			@RequestParam HashMap<String, Object> map ) {
+		
+		// 메뉴목록
+		List<MenuDTO>  menuList  = menuMapper.getMenuList();
+		
+		// 수정할 Board 정보 idx 로 검색
+		PdsDto         pds       = pdsService.getPds(map);
+		
+		// 수정할 Files 정보 idx 로 검색
+		List<FilesDto> fileList  = pdsService.getFileList(map);
+		
+		ModelAndView   mv        = new ModelAndView();
+		mv.setViewName("pds/update");
+		mv.addObject( "menuList", menuList );
+		mv.addObject( "pds",      pds );
+		mv.addObject( "fileList", fileList );
+		
+		mv.addObject( "map",      map );
+		return  mv;
+	}
+	
+	// http://localhost:8080/Pds/Update
+	// map {idx=1000, menu_id=MENU01, nowpage=1, title="글제목", content="내용"
+	// MultiPartFile [] { upfile=(binary), upfile=(binary) }
+	@RequestMapping("/Update")
+	public  ModelAndView  update(
+			@RequestParam HashMap<String, Object> map,
+			@RequestParam(value="upfile") MultipartFile [] uploadfiles ) {
+		
+		// 필요한 정보 수정
+		pdsService.setUpdate(map, uploadfiles);
+		
+		// 돌아갈 주소
+		ModelAndView  mv  = new ModelAndView();
+		String        loc = "redirect:/Pds/View?idx=" + map.get("idx")
+						  + "&menu_id=" + map.get("menu_id") 
+						  + "&nowpage=" + map.get("nowpage");
+		mv.setViewName( loc );
+		return  mv;
+	}
+	
+	
+	
 
 	// 실제 파일 다운로드 부분 : binary 데이터를 다운로드
 	private void fileCopy(HttpServletResponse response, Path saveFilePath) {
