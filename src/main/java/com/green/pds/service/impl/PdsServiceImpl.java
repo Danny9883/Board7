@@ -89,6 +89,15 @@ public class PdsServiceImpl implements PdsService {
 		return fileList;
 	}
 
+	@Override
+	public FilesDto getFileInfo(Long file_num) {
+		
+		FilesDto  fileInfo  =  pdsMapper.getFileInfo( file_num );    
+		
+		return    fileInfo;
+		
+	}
+
 }
 
 

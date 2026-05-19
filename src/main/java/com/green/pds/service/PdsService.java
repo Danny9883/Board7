@@ -20,4 +20,6 @@ public interface PdsService {
 
 	List<FilesDto> getFileList(HashMap<String, Object> map);
 
+	FilesDto getFileInfo(Long file_num);
+
 }

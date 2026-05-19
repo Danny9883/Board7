@@ -153,6 +153,24 @@
 	</select>
 	
 	
+	<!--  file_num 로 파일정보를 조회 getFileInfo -->
+	<select  id="getFileInfo">
+	 
+  SELECT
+	  FILE_NUM,
+		IDX,
+		FILENAME,
+		FILEEXT,
+		SFILENAME
+  FROM
+    FILES
+  WHERE
+    FILE_NUM = #{ file_num }
+	
+	</select> 
+	
+	
+	
 </mapper>
 
 

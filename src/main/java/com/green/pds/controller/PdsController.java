@@ -1,12 +1,24 @@
 package com.green.pds.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,9 +31,14 @@ import com.green.pds.dto.PdsDto;
 import com.green.pds.mapper.PdsMapper;
 import com.green.pds.service.PdsService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Controller
 @RequestMapping("/Pds")
 public class PdsController {
+	
+	@Value("${part1.upload-path}")
+	private   String       uploadPath;
 
 	@Autowired
 	private   MenuMapper   menuMapper;
@@ -163,6 +180,80 @@ public class PdsController {
 		return         mv;
 		
 	}
+	
+	
+	
+	//-----------------------------------------------------------------
+	// 파일다운로드
+	// 서버에서 바이너리데이터를 다운받는다 : data 덩어리
+	//-----------------------------------------------------------------
+	// http://localhost:8080/Pds/filedownload/1
+	@RequestMapping("/filedownload/{file_num}")
+	@ResponseBody     // 내려주는 것은 data 다
+	public   void   downloadFile(
+		HttpServletResponse                       res,
+		@PathVariable(value="file_num")   Long    file_num
+			) throws UnsupportedEncodingException {
+		// HttpServletResponse객체를 사용하면 return 문 없이도 data를 서버
+		//  ->클라이언트로 보낼수 있다
+		
+		FilesDto   fileInfo   =  pdsService.getFileInfo( file_num );
+		
+		// 파일경로 : 다운로드할 파일의 경로 생성
+		// import java.nio.file.Path;
+		Path   saveFilePath   =  Paths.get(
+				uploadPath
+				+ File.separator
+				+ fileInfo.getSfilename()
+				);      
+		
+		//  http 헤더 설정 : 클라이언트 브라우저에게 주는 정보
+		setFileHeader( res, fileInfo ); 
+		
+		//  파일 복사 -> 함수 ( 서버 -> 클라이언트 ) : 실제 다운로드
+		fileCopy( res, saveFilePath  );
+		
+	}
+
+	// 실제 파일 다운로드 부분 : binary 데이터를 다운로드
+	private void fileCopy(HttpServletResponse response, Path saveFilePath) {
+		
+		FileInputStream   fis = null;
+		try {
+			fis = new FileInputStream( saveFilePath.toFile()  );
+			FileCopyUtils.copy( fis, response.getOutputStream() );
+			response.getOutputStream().flush();  // 남아있는 버퍼초기화
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	// 다운로드 받을 파일의 header 정보 설정
+	private void setFileHeader(HttpServletResponse response, FilesDto fileInfo)
+			throws UnsupportedEncodingException {
+		
+		response.setHeader("Content-Disposition", 
+				"attachment; filename=\"" +
+				URLEncoder.encode( 
+					(String) fileInfo.getFilename(), "UTF-8" ) + "\";");
+		response.setHeader("Content-Transfer-Encoding", "binary" );
+		// response.setHeader("Content-Type", "application/download; utf-8" );  // hwp 연결프로그램작동
+		response.setHeader("Content-Type", "application/octet-stream; utf-8" ); // hwp 연결프로그램작동
+		response.setHeader("Pragma", "no-cache;" );
+		response.setHeader("Expires", "-1" );		
+		
+	}
+	
 	
 	
 }
